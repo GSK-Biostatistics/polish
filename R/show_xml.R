@@ -1,0 +1,25 @@
+#' Show the xml of the polished version of a display in the browser
+#'
+#' @param xml an xml node or nodeset
+#' @param wrap if TRUE, the xml is wrapped in a w:body node
+#'
+#' @details
+#' This opens the xml in the browser, so that you can do
+#' View source and inspect the structure of the xml
+#'
+#' @export
+show_xml <- function(xml, wrap = TRUE) {
+  file <- tempfile(fileext = ".html")
+  con <- file(file, open = "w")
+
+  if (isTRUE(wrap)) {
+    writeLines('<w:body xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:w14="http://schemas.microsoft.com/office/word/2010/wordml">', con = con)
+  }
+  writeLines(as.character(xml), con = con)
+  if (isTRUE(wrap)) {
+    writeLines('</w:body>', con = con)
+  }
+  close(con)
+
+  browseURL(file)
+}
