@@ -25,10 +25,11 @@
   ph = "<p:ph/>",
   pptx,
   ...,
-  height = 5,
-  width = 6,
-  units = "in",
+  height = NULL,
+  width = NULL,
   res = 300,
+  device = c("png", "svg", "jpeg"),
+  scale = 1,
   error_call = current_env()
 )
 
@@ -62,10 +63,10 @@ polish_content_pptx(x, ph = "<p:ph/>", pptx, ..., error_call = current_env())
   ph = "<p:ph/>",
   pptx,
   ...,
-  height = 5,
-  width = 6,
-  guess_size = FALSE,
+  height = NULL,
+  width = NULL,
   units = "in",
+  image_fit = c("stretch", "scale"),
   error_call = current_env()
 )
 }
@@ -92,11 +93,18 @@ running function, e.g. \code{caller_env()}. The function will be
 mentioned in error messages as the source of the error. See the
 \code{call} argument of \code{\link[rlang:abort]{abort()}} for more information.}
 
-\item{width, height, units}{Plot size in \code{units} ("in", "cm", "mm", or "px").
-defaults to 5 inches tall and 6 inches wide.}
+\item{width, height}{defaults to match the height and width of the placeholder
+provided. When that cannot be derived, it assumes the plot should be 5
+inches tall and 6 inches wide. Users may set the width and height, but they
+most both be set.}
 
 \item{res}{Plot resolution. Also accepts a string input: "retina" (320),
 "print" (300), or "screen" (72). Applies only to raster output types.}
+
+\item{device}{what graphic device to use when saving the plot. Can be one of
+"png","svg", or "jpeg".}
+
+\item{scale}{}
 
 \item{escape}{Should \code{x} be escaped with \code{\link[htmltools:htmlEscape]{htmltools::htmlEscape()}}}
 
@@ -117,6 +125,8 @@ defaults to 5 inches tall and 6 inches wide.}
 \item "unordered" makes the content bulleted list with indents.
 \item "ordered" makes a numbered list with intents.
 }}
+
+\item{image_fit}{Should the image be distorted to match the dimensions of the placeholder, or scaled up/down and keep dimension ratio (scale). Default is "stretch".}
 
 \item{guess_size}{see \link[officer:external_img]{officer::external_img}}
 }
