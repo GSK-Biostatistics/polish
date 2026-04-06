@@ -129,7 +129,7 @@ polish_content_pptx.list <- function(x, ph = '<p:ph/>', pptx, ..., list_type = c
 
 # file_ -------------------------------------------------------------------
 
-#' @param guess_size see [officer::external_img]
+#' @param units see [officer::external_img]
 #' @param image_fit Should the image be distorted to match the dimensions of the placeholder, or scaled up/down and keep dimension ratio (scale). Default is "stretch".
 #' @param scale Multiplicative scaling factor to use when saving the plot. See [ggplot2::ggsave].
 #'

@@ -126,9 +126,9 @@ most both be set.}
 \item "ordered" makes a numbered list with intents.
 }}
 
-\item{image_fit}{Should the image be distorted to match the dimensions of the placeholder, or scaled up/down and keep dimension ratio (scale). Default is "stretch".}
+\item{units}{see \link[officer:external_img]{officer::external_img}}
 
-\item{guess_size}{see \link[officer:external_img]{officer::external_img}}
+\item{image_fit}{Should the image be distorted to match the dimensions of the placeholder, or scaled up/down and keep dimension ratio (scale). Default is "stretch".}
 }
 \description{
 Polish content for Powerpoint
