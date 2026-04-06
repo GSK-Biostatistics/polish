@@ -131,7 +131,7 @@ polish_content_pptx.list <- function(x, ph = '<p:ph/>', pptx, ..., list_type = c
 
 #' @param guess_size see [officer::external_img]
 #' @param image_fit Should the image be distorted to match the dimensions of the placeholder, or scaled up/down and keep dimension ratio (scale). Default is "stretch".
-#' @param scale
+#' @param scale Multiplicative scaling factor to use when saving the plot. See [ggplot2::ggsave].
 #'
 #' @rdname polish_content_pptx
 #' @export
@@ -154,8 +154,10 @@ polish_content_pptx.file_png <- function(x, ph = '<p:ph/>', pptx, ..., height = 
 
   ## If placeholder has dims, get them
   if (length(xml_find_all(sp_ph, ".//a:xfrm")) == 1) {
-    ph_offsets <- setNames(dim_extract(sp_ph, ".//a:off", c("x", "y")), c("left","top"))
-    ph_dims    <- setNames(dim_extract(sp_ph, ".//a:ext", c("cx", "cy")), c("width","height"))
+    ph_offsets <- dim_extract(sp_ph, ".//a:off", c("x", "y"))
+    names(ph_offsets) <- c("left","top")
+    ph_dims    <- dim_extract(sp_ph, ".//a:ext", c("cx", "cy"))
+    names(ph_dims) <- c("width","height")
 
     if(image_fit == "scale"){
       image_definition <- image_fit_scale(image_definition = image_definition, ph_offsets = ph_offsets, ph_dims = ph_dims)

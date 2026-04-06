@@ -104,7 +104,7 @@ most both be set.}
 \item{device}{what graphic device to use when saving the plot. Can be one of
 "png","svg", or "jpeg".}
 
-\item{scale}{}
+\item{scale}{Multiplicative scaling factor to use when saving the plot. See \link[ggplot2:ggsave]{ggplot2::ggsave}.}
 
 \item{escape}{Should \code{x} be escaped with \code{\link[htmltools:htmlEscape]{htmltools::htmlEscape()}}}
 
