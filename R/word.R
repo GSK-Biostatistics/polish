@@ -167,3 +167,14 @@ polish_content_word.file_rtf <- function(x, inline = TRUE, ..., error_call = cur
   xml_content <- wrap_inline(xml_content, inline)
   as_xml_word(xml_content, error_call = error_call)
 }
+
+#' @export
+polish_content_word.file_html <- function(x, inline = TRUE, ..., error_call = current_env()){
+  polish_check_dots_empty(call = error_call)
+
+  path <- normalizePath(x, winslash = "/", mustWork = FALSE)
+  xml_content <- glue('<w:altChunk r:id="{path}"/>')
+  xml_content <- wrap_inline(xml_content, inline)
+  as_xml_word(xml_content, error_call = error_call)
+}
+
