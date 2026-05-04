@@ -60,6 +60,13 @@
     Output
       <w:altChunk r:id="[...]"/>
 
+# polish_content_word(<file_html>)
+
+    Code
+      polish_content_word(as_file(tf))
+    Output
+      <w:altChunk r:id="[...]"/>
+
 # polish_content_pptx(<file_txt>)
 
     Code
