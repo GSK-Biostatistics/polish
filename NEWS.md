@@ -1,3 +1,9 @@
+# polish 0.3.1
+* surface gt as_word argument autonum in polish_content_word.gt_tbl
+
+# polish 3.0.0
+* Open source the package
+
 # polish 0.2.4
 
 * Add running garbage collector after magick PDF conversion
