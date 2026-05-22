@@ -1,6 +1,7 @@
 # polish 0.3.1
 * surface gt as_word argument autonum in polish_content_word.gt_tbl
 * Add new feature to polishing figures (including ggplots) to allow choosing to stretch or scaling images to fit placeholders.
+* add outputting html chunks to word documents
 
 # polish 3.0.0
 * Open source the package

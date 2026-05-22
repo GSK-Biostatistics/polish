@@ -52,6 +52,16 @@ test_that("polish_content_word(<file_rtf>", {
   )
 })
 
+test_that("polish_content_word(<file_html>)", {
+
+  tf <- withr::local_tempfile(fileext = ".html")
+  writeLines('<html><body>hello</body></html>', tf)
+
+  expect_snapshot(transform = transform_polish,
+                  polish_content_word(as_file(tf))
+  )
+})
+
 test_that("polish_content_pptx(<file_txt>)", {
   tf <- withr::local_tempfile(fileext = ".txt")
   writeLines(c("hello", "world"), con = tf)
@@ -80,6 +90,7 @@ test_that("polish_content_pptx(<file_rtf>)", {
   expect_snapshot(transform = transform_polish,
     polish_content_pptx(as_file(tf))
   )
+
 })
 
 test_that("polish_content_pptx(<file_html>)", {
