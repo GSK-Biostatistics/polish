@@ -98,7 +98,6 @@ polish_content_pptx.data.frame <- function(x, ph = '<p:ph/>', pptx, ..., table_s
 #'   - "none" (default) puts contents on new lines and indents lists accordingly.
 #'   - "unordered" makes the content bulleted list with indents.
 #'   - "ordered" makes a numbered list with intents.
-#'
 #' @rdname polish_content_pptx
 #' @export
 polish_content_pptx.list <- function(x, ph = '<p:ph/>', pptx, ..., list_type = c("none","unordered","ordered"), error_call = current_env()){
@@ -130,39 +129,51 @@ polish_content_pptx.list <- function(x, ph = '<p:ph/>', pptx, ..., list_type = c
 
 # file_ -------------------------------------------------------------------
 
-#' @param guess_size see [officer::external_img]
+#' @param units see [officer::external_img]
+#' @param image_fit Should the image be distorted to match the dimensions of the placeholder, or scaled up/down and keep dimension ratio (scale). Default is "stretch".
+#' @param scale Multiplicative scaling factor to use when saving the plot. See [ggplot2::ggsave].
+#'
 #' @rdname polish_content_pptx
 #' @export
-polish_content_pptx.file_png <- function(x, ph = '<p:ph/>', pptx, ..., height = 5, width = 6, guess_size = FALSE, units = "in", error_call = current_env()) {
+polish_content_pptx.file_png <- function(x, ph = '<p:ph/>', pptx, ..., height = NULL, width = NULL, units = "in", image_fit = c("stretch","scale"), error_call = current_env()) {
   check_dots_empty(call = error_call)
+
+  image_fit <- match.arg(image_fit)
+
+  ## get image size, either pre-defined, or guess size
+  if(is.null(height) & is.null(width)){
+    ext_img <- officer::external_img(x, guess_size = TRUE)
+  }else{
+    ext_img <- officer::external_img(x, width = width, height = height, guess_size = FALSE)
+  }
+
+  image_definition <-  list(dims = attr(ext_img, "dims"), offset = list(top = 0, left = 0))
 
   # wrap ph in a <p:sp> node
   sp_ph      <- sp_shell(ph)
 
-  ext_img <- officer::external_img(x, height = height, width = width, unit = units, guess_size = guess_size)
-
+  ## If placeholder has dims, get them
   if (length(xml_find_all(sp_ph, ".//a:xfrm")) == 1) {
-    offsets <- dim_extract(sp_ph, ".//a:off", c("x", "y"))
-    top     <- offsets$y
-    left    <- offsets$x
+    ph_offsets <- dim_extract(sp_ph, ".//a:off", c("x", "y"))
+    names(ph_offsets) <- c("left","top")
+    ph_dims    <- dim_extract(sp_ph, ".//a:ext", c("cx", "cy"))
+    names(ph_dims) <- c("width","height")
 
-    dims    <- dim_extract(sp_ph, ".//a:ext", c("cx", "cy"))
-    height  <- dims$cy
-    width   <- dims$cx
-  } else {
-    height <- attr(ext_img, "dims")$height
-    width <- attr(ext_img, "dims")$width
-    top <- 0
-    left <- 0
+    if(image_fit == "scale"){
+      image_definition <- image_fit_scale(image_definition = image_definition, ph_offsets = ph_offsets, ph_dims = ph_dims)
+    }else{
+      image_definition <- image_fit_stretch(image_definition = image_definition, ph_offsets = ph_offsets, ph_dims = ph_dims)
+    }
+
   }
 
   # make the <p:pic> node
   xml <- as_xml_pptx(officer::to_pml(
     x      = ext_img,
-    top    = top,
-    left   = left,
-    height = height,
-    width  = width,
+    top    = image_definition$offset$top,
+    left   = image_definition$offset$left,
+    height = image_definition$dims$height,
+    width  = image_definition$dims$width,
     add_ns  = TRUE,
     ln      = officer::sp_line(lwd = 0, linecmpd = "sng", lineend = "rnd"),
     ph      = as.character(xml_find_all(sp_ph, "//p:ph"))
@@ -201,7 +212,7 @@ polish_content_pptx.file_rtf <- function(x, ph = '<p:ph/>', pptx, ..., error_cal
   check_dots_empty(call = error_call)
 
   png_path <- convert_rtf_file_to_png(x)
-  polish_content_pptx(as_file(png_path), ph = ph, guess_size = TRUE, error_call = error_call)
+  polish_content_pptx(as_file(png_path), ph = ph, image_fit = "scale", error_call = error_call)
 }
 
 #' @export
@@ -210,8 +221,9 @@ polish_content_pptx.file_html <- function(x, ph = '<p:ph/>', pptx, ..., error_ca
 
   polish_content_pptx(
     as_file(convert_html_file_to_png(x)),
-    ph = ph, guess_size = TRUE, error_call = error_call
+    ph = ph, image_fit = "scale", error_call = error_call
   )
+
 }
 
 #' @export
@@ -220,7 +232,7 @@ polish_content_pptx.file_pdf <- function(x, ph = '<p:ph/>', pptx, ..., error_cal
 
   polish_content_pptx(
     as_file(convert_pdf_file_to_png(x)),
-    ph = ph, guess_size = TRUE, error_call = error_call
+    ph = ph, image_fit = "scale", error_call = error_call
   )
 }
 
@@ -266,6 +278,44 @@ dim_extract <- function(xml, xpath, attrs = c("x, y")) {
   })
   names(out) <- attrs
   out
+}
+
+image_fit_scale <- function(image_definition, ph_offsets, ph_dims){
+
+  ## get image ratio
+  ratio <- image_definition$dims$height/image_definition$dims$width
+
+  ##determine if scaling image for width or for height
+  ### get potential new width/heights
+  ratioed_height <- ratio * ph_dims$width
+  ratioed_width <- ph_dims$height/ratio
+
+  if(ratioed_height <= ph_dims$height){
+    img_height <- ratioed_height
+    img_width <- ph_dims$width
+    img_top <- ph_offsets$top+((ph_dims$height-img_height)/2)
+    img_left <- ph_offsets$left
+  }else{
+    img_height <- ph_dims$height
+    img_width <- ratioed_width
+    img_top <- ph_offsets$top
+    img_left <- ph_offsets$left+((ph_dims$width-img_width)/2)
+  }
+
+  list(
+    dims = list(height = img_height, width = img_width),
+    offset = list(top = img_top, left = img_left)
+  )
+
+}
+
+image_fit_stretch <- function(image_definition, ph_offsets, ph_dims){
+
+  list(
+    dims = ph_dims,
+    offset = ph_offsets
+  )
+
 }
 
 polish_pptx_strings <- function(txt, escape = TRUE, collapse = FALSE, font_color = NULL, font_style = NULL, font_size = NULL, font_typeface = NULL, error_call = caller_env()) {
