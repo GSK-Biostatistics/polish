@@ -7,7 +7,10 @@ Authors@R: c(
       person("Shannon", "Haughton", email = "shannon.l.haughton@gsk.com", role = "aut"),
       person("GlaxoSmithKline Research & Development Limited", role = c("cph", "fnd"))
     )
-Description: Set of functions to polish content for Word and Powerpoint.
+Description: Set of functions to polish content for Microsoft Word and Powerpoint 
+    into ooxml. Polishing is the conversion of the R object into an ooxml
+    representation of the object that can then be added to Word or Powerpoint 
+    files.
 License: Apache License (>= 2)
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
