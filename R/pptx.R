@@ -3,7 +3,7 @@
 #'
 #' @param x object to be polished
 #' @param ph placeholder
-#' @param pptx The powerpoint presentation.
+#' @param pptx The Powerpoint Presentation object
 #' @inheritParams rlang::args_dots_empty
 #' @inheritParams rlang::args_error_context
 #'

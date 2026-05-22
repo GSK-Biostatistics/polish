@@ -86,7 +86,7 @@ the name of table style to apply as a character, options a character vector
 of options to apply from the table style, including: "Banded Columns",
 "Banded Rows", "First Column", "Header Row", "Last Column", and "Total Row"}
 
-\item{pptx}{The powerpoint presentation.}
+\item{pptx}{The Powerpoint Presentation object}
 
 \item{error_call}{The execution environment of a currently
 running function, e.g. \code{caller_env()}. The function will be
