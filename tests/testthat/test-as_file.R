@@ -83,6 +83,7 @@ test_that("polish_content_pptx(<file_md>)", {
 
 test_that("polish_content_pptx(<file_rtf>)", {
   skip_on_ci()
+  skip_on_cran()
 
   tf <- withr::local_tempfile(fileext = ".rtf")
   writeLines(c("hello", "rtf"), tf)
@@ -95,6 +96,7 @@ test_that("polish_content_pptx(<file_rtf>)", {
 
 test_that("polish_content_pptx(<file_html>)", {
   skip_on_ci()
+  skip_on_cran()
 
   tf <- withr::local_tempfile(fileext = ".html")
   writeLines('<html><body>hello</body></html>', tf)
