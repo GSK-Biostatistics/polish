@@ -15,8 +15,8 @@ License: Apache License (>= 2)
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.3
-URL: https://gsk-biostatistics.github.io/polish, https://github.com/GSK-Biostatistics/polish
-BugReports: https://github.com/GSK-Biostatistics/polish/issues
+URL: https://gsk-biostatistics.github.io/polish/, https://github.com/GSK-Biostatistics/polish/
+BugReports: https://github.com/GSK-Biostatistics/polish/issues/
 Depends:
     R (>= 4.1.0)
 Imports: 
