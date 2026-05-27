@@ -8,7 +8,7 @@ Authors@R: c(
       person("GlaxoSmithKline Research & Development Limited", role = c("cph", "fnd"))
     )
 Description: Set of functions to polish content for Microsoft 'Word' and 'PowerPoint' 
-    into OOXML. Polishing is the conversion of the R object into an 'OOXML'
+    into 'OOXML'. Polishing is the conversion of the R object into an 'OOXML'
     representation of the object that can then be added to 'Word' or 'PowerPoint' 
     files.
 License: Apache License (>= 2)
