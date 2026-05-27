@@ -1,5 +1,5 @@
 Package: polish
-Title: Polishing Content for Word and PowerPoint
+Title: Polishing Content for 'Word' and 'PowerPoint'
 Version: 0.3.1
 Authors@R: c(
       person("Romain", "François", email = "romain@tada.science", role = "aut"), 
@@ -7,9 +7,9 @@ Authors@R: c(
       person("Shannon", "Haughton", email = "shannon.l.haughton@gsk.com", role = "aut"),
       person("GlaxoSmithKline Research & Development Limited", role = c("cph", "fnd"))
     )
-Description: Set of functions to polish content for Microsoft Word and PowerPoint 
-    into OOXML. Polishing is the conversion of the R object into an OOXML
-    representation of the object that can then be added to Word or PowerPoint 
+Description: Set of functions to polish content for Microsoft 'Word' and 'PowerPoint' 
+    into OOXML. Polishing is the conversion of the R object into an 'OOXML'
+    representation of the object that can then be added to 'Word' or 'PowerPoint' 
     files.
 License: Apache License (>= 2)
 Encoding: UTF-8
