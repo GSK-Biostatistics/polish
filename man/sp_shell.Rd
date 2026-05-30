@@ -14,6 +14,10 @@ running function, e.g. \code{caller_env()}. The function will be
 mentioned in error messages as the source of the error. See the
 \code{call} argument of \code{\link[rlang:abort]{abort()}} for more information.}
 }
+\value{
+an object of class "polish_xml_nodeset". Contains XML that is viable
+PowerPoint OOXML for addition to PowerPoint documents.
+}
 \description{
 Wrap the placeholder into a <p:sp> shell
 }

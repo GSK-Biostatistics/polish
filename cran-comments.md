@@ -4,3 +4,4 @@
 
 * This is a new release.
 * Update based on feedback to make title to title case.
+* Update rd files missing the "value"

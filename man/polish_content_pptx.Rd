@@ -130,6 +130,10 @@ most both be set.}
 
 \item{image_fit}{Should the image be distorted to match the dimensions of the placeholder, or scaled up/down and keep dimension ratio (scale). Default is "stretch".}
 }
+\value{
+a "polish_xml_nodeset" of viable PowerPoint OOXML for addition
+to PowerPoint presentations.
+}
 \description{
 Polish content for Powerpoint
 }

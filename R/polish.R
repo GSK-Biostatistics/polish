@@ -9,6 +9,9 @@
 #' @details depending on `type` either the [polish_content_pptx()] or [polish_content_word()]
 #'          function is called.
 #'
+#' @returns  an object of class "polish_xml_nodeset". Contains XML that is viable Word or PowerPoint OOXML for addition
+#'   to Word documents or PowerPoint presentations based on the "type".
+#'
 #' @export
 polish_content <- function(x, type, ..., error_call = current_env(), error_class = NULL) {
   if (missing(type)) {
