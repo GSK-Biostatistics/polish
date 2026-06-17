@@ -14,6 +14,10 @@ running function, e.g. \code{caller_env()}. The function will be
 mentioned in error messages as the source of the error. See the
 \code{call} argument of \code{\link[rlang:abort]{abort()}} for more information.}
 }
+\value{
+adds the class "as_is" to the input text the content "as is" and not
+modify it when polishing
+}
 \description{
 Mark as a node to inject as is
 }

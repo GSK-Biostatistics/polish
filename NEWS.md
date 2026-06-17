@@ -36,10 +36,10 @@
 
 # polish 0.2.0
 
-* Update powerpoint polishing for data.frames to use flextable
+* Update PowerPoint polishing for data.frames to use flextable
 * Correct flextable vertical centering algorithm
 * Add ability to set text formatting (font, size, color, typeface)
-* Add ability to set flextable table styling on polishing in PPTX outputs
+* Add ability to set flextable table styling on polishing in PowerPoint outputs
 * Improve png offsets
 * Record original placeholder dimensions when polishing for future use
 

@@ -9,6 +9,10 @@ as_md(x)
 \arguments{
 \item{x}{text to be interpreted as markdown}
 }
+\value{
+adds the class "as_ms" to the input text the content "as markdown"
+apply markdown formatting to the text when polishing
+}
 \description{
 Mark text as markdown
 }

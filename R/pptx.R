@@ -3,9 +3,12 @@
 #'
 #' @param x object to be polished
 #' @param ph placeholder
-#' @param pptx The powerpoint presentation.
+#' @param pptx The Powerpoint Presentation object
 #' @inheritParams rlang::args_dots_empty
 #' @inheritParams rlang::args_error_context
+#'
+#' @returns a "polish_xml_nodeset" of viable PowerPoint OOXML for addition
+#'   to PowerPoint presentations.
 #'
 #' @export
 polish_content_pptx <- function(x, ph = '<p:ph/>', pptx, ..., error_call = current_env()) {
@@ -243,6 +246,10 @@ polish_content_pptx.file_pdf <- function(x, ph = '<p:ph/>', pptx, ..., error_cal
 #'
 #' @param ph placeholder
 #' @inheritParams rlang::args_error_context
+#'
+#' @returns an object of class "polish_xml_nodeset". Contains XML that is viable
+#'   PowerPoint OOXML for addition to PowerPoint documents.
+#'
 #'
 #' @export
 sp_shell <- function(ph, error_call = current_env()){

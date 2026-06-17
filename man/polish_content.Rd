@@ -20,6 +20,10 @@ mentioned in error messages as the source of the error. See the
 
 \item{error_class}{Additional error class.}
 }
+\value{
+an object of class "polish_xml_nodeset". Contains XML that is viable Word or PowerPoint OOXML for addition
+to Word documents or PowerPoint presentations based on the "type".
+}
 \description{
 Polish content
 }

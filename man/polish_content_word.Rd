@@ -87,6 +87,10 @@ defaults to 5 inches tall and 6 inches wide.}
 
 \item{font_typeface}{typeface of the text to be added if different from document default.}
 }
+\value{
+an object of class "polish_xml_nodeset". Contains XML that is viable Word OOXML for addition to
+Word documents.
+}
 \description{
 Polish content for Word
 }

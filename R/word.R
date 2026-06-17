@@ -4,7 +4,8 @@
 #' @param ... used in some methods
 #' @param inline if `FALSE` the comments are wrapped in a `<w:p>`
 #' @inheritParams rlang::args_error_context
-#'
+#' @returns  an object of class "polish_xml_nodeset". Contains XML that is viable Word OOXML for addition to
+#'   Word documents.
 #' @export
 polish_content_word <- function(x, inline = FALSE, ..., error_call = current_env()) {
   UseMethod("polish_content_word")
