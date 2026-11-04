@@ -136,12 +136,12 @@ gt_internal <- function(name) {
 
 #' Upgrade a `gt_tbl` built by an older gt to the current structure
 #'
-#' Uses `gt::gt(data.frame())` as the template for the current spec and fills
-#' in whatever the input lacks: top-level components, `_options` rows, and
-#' columns of data-frame components. Existing values are never overwritten.
+#' Builds a template with the installed gt from a zero-row copy of the input's
+#' `_data` (so columns match) and fills in the top-level components and
+#' `_options` rows the input lacks. Existing values are never overwritten.
 #' @noRd
 repair_gt <- function(x) {
-  base <- gt::gt(data.frame())
+  base <- gt::gt(x[["_data"]][0, , drop = FALSE])
 
   miss <- setdiff(names(base), names(x))
   x[miss] <- base[miss]
@@ -149,14 +149,6 @@ repair_gt <- function(x) {
   o <- x[["_options"]]
   b <- base[["_options"]]
   x[["_options"]] <- rbind(o, b[!b$parameter %in% o$parameter, ])
-
-  for (n in setdiff(names(base), "_data")) {
-    if (is.data.frame(base[[n]]) && is.data.frame(x[[n]])) {
-      for (cl in setdiff(names(base[[n]]), names(x[[n]]))) {
-        x[[n]][[cl]] <- base[[n]][[cl]][NA_integer_][seq_len(nrow(x[[n]]))]
-      }
-    }
-  }
 
   structure(x[names(base)], class = class(base))
 }
