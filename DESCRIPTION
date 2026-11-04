@@ -25,7 +25,7 @@ Imports:
     flextable,
     ggplot2,
     glue,
-    gt (>= 1.4.0),
+    gt,
     htmltools,
     magick,
     officer (>= 0.6.9),

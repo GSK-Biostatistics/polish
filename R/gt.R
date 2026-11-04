@@ -5,7 +5,7 @@
 polish_content_word.gt_tbl <- function(x, inline = FALSE, keep_with_next = TRUE, autonum = TRUE, ..., error_call = current_env()) {
   polish_check_dots_empty(call = error_call)
 
-  xml <- gt::as_word(x, keep_with_next = keep_with_next, autonum = autonum)
+  xml <- gt::as_word(repair_gt(x), keep_with_next = keep_with_next, autonum = autonum)
   as_xml_word(xml, error_call = error_call)
 }
 
@@ -15,7 +15,7 @@ polish_content_word.gt_group <- function(x, inline = FALSE, keep_with_next = TRU
 
   xml_list <- list()
   for(i in 1:nrow(x$gt_tbls)){
-    xml <- gt::as_word(grp_pull(x,i), keep_with_next = keep_with_next, autonum = autonum)
+    xml <- gt::as_word(repair_gt(grp_pull(x,i)), keep_with_next = keep_with_next, autonum = autonum)
     xml_list[[length(xml_list)+1]] <- xml
 
     # Add empty line between the tables
@@ -48,9 +48,10 @@ polish_content_pptx.gt_group <- function(x, ph = "<p:ph/>", ..., pages = NULL, f
 
   n_tbls <- nrow(x$gt_tbls)
   pages <- pages %||% seq_len(n_tbls)
-  if (!is.numeric(pages) || length(pages) == 0 || any(pages < 1 | pages > n_tbls | pages %% 1 != 0)) {
+  if (!is.numeric(pages) || length(pages) == 0 || any(pages < 1 | pages > n_tbls | pages %% 1 != 0 | is.na(pages))) {
     cli_abort(
       "{.arg pages} must be integer indices between 1 and {n_tbls}.",
+      i = "Provided: {paste('\'',pages, collapse = ', ')}.",
       call = error_call
     )
   }
@@ -60,12 +61,14 @@ polish_content_pptx.gt_group <- function(x, ph = "<p:ph/>", ..., pages = NULL, f
   gt_tbls_to_pptx(tbls, ph = ph, full_width = full_width, table_style = table_style, pptx = pptx, error_call = error_call)
 }
 
-#' @importFrom xml2 xml_set_attr xml_remove xml_find_first xml_attr xml_name
+#' @importFrom xml2 xml_set_attr xml_remove xml_find_first xml_attr xml_name xml_find_all
 #' @noRd
 gt_tbls_to_pptx <- function(tbls, ph, full_width = FALSE, table_style = NULL, pptx = NULL, error_call = current_env()) {
   check_gt_pptx(error_call = error_call)
   check_table_style(table_style, error_call = error_call)
 
+  # get dimensions from the placeholder (ph) if present,
+  #  otherwise use default dimensions of 10 x 7.5 inches, and aligned to the top left corner of the slide
   sp_ph <- sp_shell(ph, error_call = error_call)
   if (length(xml_find_all(sp_ph, ".//a:xfrm")) == 1) {
     off <- dim_extract(sp_ph, ".//a:off", c("x", "y"))
@@ -84,7 +87,7 @@ gt_tbls_to_pptx <- function(tbls, ph, full_width = FALSE, table_style = NULL, pp
   frames <- vector("list", n)
   y <- top
   for (i in seq_len(n)) {
-    tbl <- gt_pptx_table_node(as_pptx_ooxml(tbls[[i]]), error_call = error_call)
+    tbl <- gt_pptx_table_node(as_pptx_ooxml(repair_gt(tbls[[i]])), error_call = error_call)
     tbl_width <- fit_pptx_table_width(tbl, width = width, full_width = full_width)
 
     if (!is.null(table_style)) {
@@ -129,6 +132,33 @@ check_gt_pptx <- function(error_call = current_env()) {
 
 gt_internal <- function(name) {
   get(name, envir = asNamespace("gt"), inherits = FALSE)
+}
+
+#' Upgrade a `gt_tbl` built by an older gt to the current structure
+#'
+#' Uses `gt::gt(data.frame())` as the template for the current spec and fills
+#' in whatever the input lacks: top-level components, `_options` rows, and
+#' columns of data-frame components. Existing values are never overwritten.
+#' @noRd
+repair_gt <- function(x) {
+  base <- gt::gt(data.frame())
+
+  miss <- setdiff(names(base), names(x))
+  x[miss] <- base[miss]
+
+  o <- x[["_options"]]
+  b <- base[["_options"]]
+  x[["_options"]] <- rbind(o, b[!b$parameter %in% o$parameter, ])
+
+  for (n in setdiff(names(base), "_data")) {
+    if (is.data.frame(base[[n]]) && is.data.frame(x[[n]])) {
+      for (cl in setdiff(names(base[[n]]), names(x[[n]]))) {
+        x[[n]][[cl]] <- base[[n]][[cl]][NA_integer_][seq_len(nrow(x[[n]]))]
+      }
+    }
+  }
+
+  structure(x[names(base)], class = class(base))
 }
 
 #' Extract the single `a:tbl` node from gt PowerPoint OOXML
