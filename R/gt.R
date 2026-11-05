@@ -181,21 +181,27 @@ fit_pptx_table_width <- function(tbl, width, full_width = TRUE) {
   col_widths <- as.numeric(xml_attr(grid_cols, "w"))
   natural <- sum(col_widths) / 914400
 
-  if (!full_width) {
+  ## scale if full_width = TRUE or the table is wider than the placeholder
+  ## scale to fill the placeholder width, preserving column proportions
+  if (full_width | (natural > width)) {
+    
+    target <- width
+    emu <- round(target * 914400)
+
+    if (length(col_widths) > 0 && sum(col_widths) > 0) {
+      scaled <- round(col_widths / sum(col_widths) * emu)
+      # absorb rounding drift so columns total the placeholder width
+      scaled[length(scaled)] <- emu - sum(scaled[-length(scaled)])
+      xml_set_attr(grid_cols, "w", as.character(scaled))
+    }
+    xml_set_attr(xml_find_first(tbl, ".//a:tableW"), "w", as.character(emu))
+    target
+
+  }else{
+    ## otherwise didnt specify full_width or the table is fits,
     return(if (length(col_widths) == 0 || natural == 0) width else natural)
-  }
 
-  target <- width
-  emu <- round(target * 914400)
-
-  if (length(col_widths) > 0 && sum(col_widths) > 0) {
-    scaled <- round(col_widths / sum(col_widths) * emu)
-    # absorb rounding drift so columns total the placeholder width
-    scaled[length(scaled)] <- emu - sum(scaled[-length(scaled)])
-    xml_set_attr(grid_cols, "w", as.character(scaled))
   }
-  xml_set_attr(xml_find_first(tbl, ".//a:tableW"), "w", as.character(emu))
-  target
 }
 
 pptx_table_height <- function(tbl) {
