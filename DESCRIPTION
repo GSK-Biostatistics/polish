@@ -1,6 +1,6 @@
 Package: polish
 Title: Polishing Content for 'Word' and 'PowerPoint'
-Version: 0.3.1
+Version: 0.3.1.9000
 Authors@R: c(
       person("Romain", "François", email = "romain@tada.science", role = "aut"), 
       person("Ellis", "Hughes", email = "ellis.h.hughes@gsk.com", role = c("aut", "cre")), 
@@ -14,7 +14,6 @@ Description: Set of functions to polish content for Microsoft 'Word' and 'PowerP
 License: Apache License (>= 2)
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.3.3
 URL: https://gsk-biostatistics.github.io/polish/, https://github.com/GSK-Biostatistics/polish/
 BugReports: https://github.com/GSK-Biostatistics/polish/issues/
 Depends:
@@ -41,3 +40,4 @@ Suggests:
     testthat (>= 3.0.0), 
     withr
 Config/testthat/edition: 3
+Config/roxygen2/version: 8.0.0
