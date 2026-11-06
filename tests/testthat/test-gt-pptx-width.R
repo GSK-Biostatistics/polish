@@ -28,14 +28,20 @@ test_that("fit_pptx_table_width respects full_width parameter", {
     label = "full_width = TRUE should scale to placeholder width"
   )
 
-  # Test 2: full_width = FALSE leaves the table unmodified, even if wider
+  # Test 2: full_width = FALSE, but if table is wider, it shrinks the table to match
   tbl_node <- get_tbl_node()
   tbl_copy2 <- as_xml_node(tbl_node)
   before <- as.character(tbl_copy2)
   result_width_shrunk <- fit_pptx_table_width(tbl_copy2, width = 1.0, full_width = FALSE)
+  grid_cols_scaled <- xml2::xml_find_all(tbl_copy2, ".//a:gridCol")
+  col_widths_scaled <- sum(as.numeric(xml2::xml_attr(grid_cols_scaled, "w")))
 
-  expect_equal(result_width_shrunk, natural_width, tolerance = 0.01)
-  expect_identical(as.character(tbl_copy2), before)
+  expect_equal(result_width_shrunk, 1.0, tolerance = 0.01,
+    label = "full_width = FALDE but wider should scale to placeholder width"
+  )
+  expect_equal(col_widths_scaled, 1.0 * 914400,
+    label = "full_width = FALDE but wider should scale to placeholder width"
+  )
 
   # Test 3: full_width = FALSE keeps natural width when it fits
   tbl_node <- get_tbl_node()

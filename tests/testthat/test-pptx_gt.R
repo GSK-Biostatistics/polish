@@ -40,8 +40,8 @@ test_that("polish_content_pptx(<gt_tbl>) full_width mirrors flextable sizing", {
 
   # wider than the placeholder: shrunk to fit
   tab <- gt::cols_width(base, everything() ~ gt::px(960))
-  ## full_width = FALSE keeps natural width (10in) even if it exceeds placeholder
-  expect_equal(frame_w(polish_content_pptx(tab, ph = gt_ph)), 18288000)
+  ## full_width = FALSE, but shrinks if natural width (10in) exceeds placeholder
+  expect_equal(frame_w(polish_content_pptx(tab, ph = gt_ph)), 7315200)
   ## full_width = TRUE shrinks to fit placeholder
   expect_equal(frame_w(polish_content_pptx(tab, ph = gt_ph, full_width = TRUE)), 7315200)
   
