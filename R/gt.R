@@ -5,7 +5,7 @@
 polish_content_word.gt_tbl <- function(x, inline = FALSE, keep_with_next = TRUE, autonum = TRUE, ..., error_call = current_env()) {
   polish_check_dots_empty(call = error_call)
 
-  xml <- gt::as_word(repair_gt(x), keep_with_next = keep_with_next, autonum = autonum)
+  xml <- gt::as_word(x, keep_with_next = keep_with_next, autonum = autonum)
   as_xml_word(xml, error_call = error_call)
 }
 
