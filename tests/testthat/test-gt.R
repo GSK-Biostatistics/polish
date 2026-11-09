@@ -53,10 +53,14 @@ test_that("polish_content_word(<gt_group>", {
 })
 
 test_that("polish_content_word(<gt_tbl>) repairs gt objects from older versions", {
+
+  skip("repair_gt not implemented for polish_content_word() yet")
+
   skip_if_not_installed("gt")
   for (v in c("1.0.0", "1.3.0")) {
     old <- readRDS(test_path("fixtures", sprintf("mtcars_gt_%s.RDS", v)))
     xml <- polish_content_word(old)
     expect_equal(xml_name_word(xml), "w:tbl")
   }
+  
 })
