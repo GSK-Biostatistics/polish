@@ -14,12 +14,13 @@ polish_content_word.ggplot <- function(x, inline = FALSE, ..., height = 5, width
 #' @param res Plot resolution. Also accepts a string input: "retina" (320),
 #'   "print" (300), or "screen" (72). Applies only to raster output types.
 #' @param device what graphic device to use when saving the plot. Can be one of
-#'   "png","svg", or "jpeg".
+#'   "png","svg","jpeg", or "dml". "dml" uses [rvg::dml_pptx()] to produce an
+#'   editable vector graphic and requires the rvg package.
 #'
 #' @param scale Multiplicative scaling factor.
 #' @rdname polish_content_pptx
 #' @export
-polish_content_pptx.ggplot <- function(x, ph = "<p:ph/>", pptx, ..., height = NULL, width = NULL, res = 300, device = c("png","svg","jpeg"), scale = 1, error_call = current_env()){
+polish_content_pptx.ggplot <- function(x, ph = "<p:ph/>", pptx, ..., height = NULL, width = NULL, res = 300, device = c("png","svg","jpeg","dml"), scale = 1, error_call = current_env()){
 
   ## get width and height of placeholder if not set
   if(is.null(height) & is.null(width)){
@@ -44,6 +45,7 @@ polish_content_pptx.ggplot <- function(x, ph = "<p:ph/>", pptx, ..., height = NU
     if(!is.null(width) & !invalid_dims){
       invalid_dims <- !is.numeric(width) | (length(width) > 1) | isTRUE(width <= 0)
     }
+    
     if(!is.null(height) & !invalid_dims){
       invalid_dims <- !is.numeric(height) | (length(height) > 1) | isTRUE(height <= 0)
     }
@@ -63,13 +65,28 @@ polish_content_pptx.ggplot <- function(x, ph = "<p:ph/>", pptx, ..., height = NU
     image_fit <- "scale"
   }
 
+
   png <- polish_ggplot(x, device = device, height = height, width = width, units = "in", dpi = res, scale = scale)
   polish_content_pptx(png, ph = ph, pptx = pptx, ..., height = height, width = width, units = "in", image_fit = image_fit, error_call = error_call)
 }
 
-polish_ggplot <- function(x, device = c("png","svg","jpeg"), ...) {
+
+polish_ggplot <- function(x, device = c("png","svg","jpeg","dml"), ...) {
   device <- match.arg(device)
-  tmp_img <- tempfile(fileext = paste0(".", device))
+  ext <- device
+  if (device == "dml") {
+    # Position and size are applied by polish_content_pptx.file_dml()
+    device <- dml_device
+  }
+  tmp_img <- tempfile(fileext = paste0(".", ext))
   ggsave(x, filename = tmp_img, device = device, ...)
   as_file(tmp_img)
+}
+
+dml_device <- function(file, width, height, ...) {
+  rlang::check_installed("rvg", reason = "to use `device = \"dml\"`.")
+  rvg::dml_pptx(
+    file = file, width = width, height = height, offx = 0, offy = 0,
+    id = 0L, last_rel_id = 1L, raster_prefix = tempfile(), standalone = FALSE
+  )
 }

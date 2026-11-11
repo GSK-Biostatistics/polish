@@ -28,7 +28,7 @@
   height = NULL,
   width = NULL,
   res = 300,
-  device = c("png", "svg", "jpeg"),
+  device = c("png", "svg", "jpeg", "dml"),
   scale = 1,
   error_call = current_env()
 )
@@ -102,7 +102,8 @@ most both be set.}
 "print" (300), or "screen" (72). Applies only to raster output types.}
 
 \item{device}{what graphic device to use when saving the plot. Can be one of
-"png","svg", or "jpeg".}
+"png","svg","jpeg", or "dml". "dml" uses \code{\link[rvg:dml_pptx]{rvg::dml_pptx()}} to produce an
+editable vector graphic and requires the rvg package.}
 
 \item{scale}{Multiplicative scaling factor to use when saving the plot. See \link[ggplot2:ggsave]{ggplot2::ggsave}.}
 
