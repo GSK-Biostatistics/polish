@@ -20,7 +20,7 @@ polish_content_word.ggplot <- function(x, inline = FALSE, ..., height = 5, width
 #' @param scale Multiplicative scaling factor.
 #' @rdname polish_content_pptx
 #' @export
-polish_content_pptx.ggplot <- function(x, ph = "<p:ph/>", pptx, ..., height = NULL, width = NULL, res = 300, device = c("png","svg","jpeg","dml"), scale = 1, error_call = current_env()){
+polish_content_pptx.ggplot <- function(x, ph = "<p:ph/>", pptx, ..., height = NULL, width = NULL, res = 300, device = c("png","svg","jpeg","dml"), scale = 1, image_fit = NULL,error_call = current_env()){
 
   ## get width and height of placeholder if not set
   if(is.null(height) & is.null(width)){
@@ -33,11 +33,11 @@ polish_content_pptx.ggplot <- function(x, ph = "<p:ph/>", pptx, ..., height = NU
       dims    <- dim_extract(sp_ph, ".//a:ext", c("cx", "cy"))
       height  <- dims$cy
       width   <- dims$cx
-      image_fit <- "stretch"
+      image_fit <- image_fit %||% "stretch"
     }else{
       height <- 5
       width  <- 6
-      image_fit <- "scale"
+      image_fit <- image_fit %||% "scale"
     }
   }else{
 
@@ -45,7 +45,7 @@ polish_content_pptx.ggplot <- function(x, ph = "<p:ph/>", pptx, ..., height = NU
     if(!is.null(width) & !invalid_dims){
       invalid_dims <- !is.numeric(width) | (length(width) > 1) | isTRUE(width <= 0)
     }
-    
+
     if(!is.null(height) & !invalid_dims){
       invalid_dims <- !is.numeric(height) | (length(height) > 1) | isTRUE(height <= 0)
     }
@@ -62,7 +62,7 @@ polish_content_pptx.ggplot <- function(x, ph = "<p:ph/>", pptx, ..., height = NU
       ), call = error_call)
     }
 
-    image_fit <- "scale"
+    image_fit <- image_fit %||% "scale"
   }
 
 
