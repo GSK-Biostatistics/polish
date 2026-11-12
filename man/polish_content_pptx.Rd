@@ -30,6 +30,7 @@
   res = 300,
   device = c("png", "svg", "jpeg", "dml"),
   scale = 1,
+  image_fit = NULL,
   error_call = current_env()
 )
 
@@ -107,6 +108,8 @@ editable vector graphic and requires the rvg package.}
 
 \item{scale}{Multiplicative scaling factor to use when saving the plot. See \link[ggplot2:ggsave]{ggplot2::ggsave}.}
 
+\item{image_fit}{Should the image be distorted to match the dimensions of the placeholder, or scaled up/down and keep dimension ratio (scale). Default is "stretch".}
+
 \item{escape}{Should \code{x} be escaped with \code{\link[htmltools:htmlEscape]{htmltools::htmlEscape()}}}
 
 \item{collapse}{If \code{TRUE} a \verb{<a:br w:type="textWrapping" w:clear="all">} element is added between the \verb{<a:r>} nodes}
@@ -128,8 +131,6 @@ editable vector graphic and requires the rvg package.}
 }}
 
 \item{units}{see \link[officer:external_img]{officer::external_img}}
-
-\item{image_fit}{Should the image be distorted to match the dimensions of the placeholder, or scaled up/down and keep dimension ratio (scale). Default is "stretch".}
 }
 \value{
 a "polish_xml_nodeset" of viable PowerPoint OOXML for addition
