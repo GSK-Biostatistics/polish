@@ -155,20 +155,8 @@ polish_content_pptx.file_png <- function(x, ph = '<p:ph/>', pptx, ..., height = 
   # wrap ph in a <p:sp> node
   sp_ph      <- sp_shell(ph)
 
-  ## If placeholder has dims, get them
-  if (length(xml_find_all(sp_ph, ".//a:xfrm")) == 1) {
-    ph_offsets <- dim_extract(sp_ph, ".//a:off", c("x", "y"))
-    names(ph_offsets) <- c("left","top")
-    ph_dims    <- dim_extract(sp_ph, ".//a:ext", c("cx", "cy"))
-    names(ph_dims) <- c("width","height")
+  image_definition <- fit_to_placeholder(image_definition, sp_ph, image_fit)
 
-    if(image_fit == "scale"){
-      image_definition <- image_fit_scale(image_definition = image_definition, ph_offsets = ph_offsets, ph_dims = ph_dims)
-    }else{
-      image_definition <- image_fit_stretch(image_definition = image_definition, ph_offsets = ph_offsets, ph_dims = ph_dims)
-    }
-
-  }
 
   # make the <p:pic> node
   xml <- as_xml_pptx(officer::to_pml(
@@ -186,6 +174,34 @@ polish_content_pptx.file_png <- function(x, ph = '<p:ph/>', pptx, ..., height = 
     xml_find_all(xml, ".//p:nvPicPr/p:cNvPr"),  # created by to_pml()
     xml_find_all(sp_ph, ".//p:nvSpPr/p:cNvPr")  # given as ph=
   )
+
+  xml
+}
+
+#' @export
+polish_content_pptx.file_dml <- function(x, ph = '<p:ph/>', pptx, ..., height = NULL, width = NULL, units = "in", image_fit = c("stretch","scale"), error_call = current_env()) {
+  check_dots_empty(call = error_call)
+  image_fit <- match.arg(image_fit)
+
+  dml_str <- paste(readLines(x, warn = FALSE, encoding = "UTF-8"), collapse = "")
+  xml <- as_xml_pptx(sub("^<\\?xml[^>]*\\?>", "", dml_str), error_call = error_call)
+
+  native <- dim_extract(xml, ".//a:chExt", c("cx", "cy"))
+  image_definition <- list(
+    dims = list(height = height %||% native$cy, width = width %||% native$cx),
+    offset = list(top = 0, left = 0)
+  )
+  image_definition <- fit_to_placeholder(image_definition, sp_shell(ph), image_fit)
+
+  # Only the group transform changes; children stay in their original coordinate space
+  emu <- \(v) as.character(round(v * 914400))
+  xfrm <- xml_find_first(xml, ".//p:grpSpPr/a:xfrm")
+  off <- xml_find_first(xfrm, "a:off")
+  ext <- xml_find_first(xfrm, "a:ext")
+  xml_attr(off, "x") <- emu(image_definition$offset$left)
+  xml_attr(off, "y") <- emu(image_definition$offset$top)
+  xml_attr(ext, "cx") <- emu(image_definition$dims$width)
+  xml_attr(ext, "cy") <- emu(image_definition$dims$height)
 
   xml
 }
@@ -241,6 +257,22 @@ polish_content_pptx.file_pdf <- function(x, ph = '<p:ph/>', pptx, ..., error_cal
 
 
 # utils -------------------------------------------------------------------
+
+fit_to_placeholder <- function(image_definition, sp_ph, image_fit) {
+  if (length(xml_find_all(sp_ph, ".//a:xfrm")) != 1) {
+    return(image_definition)
+  }
+  ph_offsets <- dim_extract(sp_ph, ".//a:off", c("x", "y"))
+  names(ph_offsets) <- c("left","top")
+  ph_dims <- dim_extract(sp_ph, ".//a:ext", c("cx", "cy"))
+  names(ph_dims) <- c("width","height")
+
+  if (image_fit == "scale") {
+    image_fit_scale(image_definition, ph_offsets, ph_dims)
+  } else {
+    image_fit_stretch(image_definition, ph_offsets, ph_dims)
+  }
+}
 
 #' Wrap the placeholder into a <p:sp> shell
 #'

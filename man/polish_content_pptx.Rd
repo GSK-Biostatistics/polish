@@ -28,8 +28,9 @@
   height = NULL,
   width = NULL,
   res = 300,
-  device = c("png", "svg", "jpeg"),
+  device = c("png", "svg", "jpeg", "dml"),
   scale = 1,
+  image_fit = NULL,
   error_call = current_env()
 )
 
@@ -102,9 +103,12 @@ most both be set.}
 "print" (300), or "screen" (72). Applies only to raster output types.}
 
 \item{device}{what graphic device to use when saving the plot. Can be one of
-"png","svg", or "jpeg".}
+"png","svg","jpeg", or "dml". "dml" uses \code{\link[rvg:dml_pptx]{rvg::dml_pptx()}} to produce an
+editable vector graphic and requires the rvg package.}
 
 \item{scale}{Multiplicative scaling factor to use when saving the plot. See \link[ggplot2:ggsave]{ggplot2::ggsave}.}
+
+\item{image_fit}{Should the image be distorted to match the dimensions of the placeholder, or scaled up/down and keep dimension ratio (scale). Default is "stretch".}
 
 \item{escape}{Should \code{x} be escaped with \code{\link[htmltools:htmlEscape]{htmltools::htmlEscape()}}}
 
@@ -127,8 +131,6 @@ most both be set.}
 }}
 
 \item{units}{see \link[officer:external_img]{officer::external_img}}
-
-\item{image_fit}{Should the image be distorted to match the dimensions of the placeholder, or scaled up/down and keep dimension ratio (scale). Default is "stretch".}
 }
 \value{
 a "polish_xml_nodeset" of viable PowerPoint OOXML for addition
