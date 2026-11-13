@@ -27,6 +27,7 @@
   ...,
   height = NULL,
   width = NULL,
+  units = c("in", "cm", "mm", "px"),
   res = 300,
   device = c("png", "svg", "jpeg", "dml"),
   scale = 1,
@@ -66,8 +67,8 @@ polish_content_pptx(x, ph = "<p:ph/>", pptx, ..., error_call = current_env())
   ...,
   height = NULL,
   width = NULL,
-  units = "in",
-  image_fit = c("stretch", "scale"),
+  units = c("in", "cm", "mm"),
+  image_fit = c("stretch", "scale", "scale_down"),
   error_call = current_env()
 )
 }
@@ -99,6 +100,8 @@ provided. When that cannot be derived, it assumes the plot should be 5
 inches tall and 6 inches wide. Users may set the width and height, but they
 most both be set.}
 
+\item{units}{see \link[officer:external_img]{officer::external_img}}
+
 \item{res}{Plot resolution. Also accepts a string input: "retina" (320),
 "print" (300), or "screen" (72). Applies only to raster output types.}
 
@@ -108,7 +111,7 @@ editable vector graphic and requires the rvg package.}
 
 \item{scale}{Multiplicative scaling factor to use when saving the plot. See \link[ggplot2:ggsave]{ggplot2::ggsave}.}
 
-\item{image_fit}{Should the image be distorted to match the dimensions of the placeholder, or scaled up/down and keep dimension ratio (scale). Default is "stretch".}
+\item{image_fit}{How the image is fit to the placeholder. "stretch" distorts the image to match the placeholder; "scale" scales up/down keeping the aspect ratio; "scale_down" keeps the original size (centered) when the image is smaller than the placeholder, and otherwise scales down keeping the aspect ratio. Default is "stretch".}
 
 \item{escape}{Should \code{x} be escaped with \code{\link[htmltools:htmlEscape]{htmltools::htmlEscape()}}}
 
@@ -129,8 +132,6 @@ editable vector graphic and requires the rvg package.}
 \item "unordered" makes the content bulleted list with indents.
 \item "ordered" makes a numbered list with intents.
 }}
-
-\item{units}{see \link[officer:external_img]{officer::external_img}}
 }
 \value{
 a "polish_xml_nodeset" of viable PowerPoint OOXML for addition

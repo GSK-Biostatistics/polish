@@ -18,9 +18,13 @@ polish_content_word.ggplot <- function(x, inline = FALSE, ..., height = 5, width
 #'   editable vector graphic and requires the rvg package.
 #'
 #' @param scale Multiplicative scaling factor.
+#' @param units Units of `height` and `width`: "in", "cm", "mm", or "px"
+#'   ("px" uses `res`). Ignored when the size is taken from the placeholder.
 #' @rdname polish_content_pptx
 #' @export
-polish_content_pptx.ggplot <- function(x, ph = "<p:ph/>", pptx, ..., height = NULL, width = NULL, res = 300, device = c("png","svg","jpeg","dml"), scale = 1, image_fit = NULL,error_call = current_env()){
+polish_content_pptx.ggplot <- function(x, ph = "<p:ph/>", pptx, ..., height = NULL, width = NULL, units = c("in", "cm", "mm", "px"), res = 300, device = c("png","svg","jpeg","dml"), scale = 1, image_fit = NULL, error_call = current_env()){
+
+  units <- match.arg(units)
 
   ## get width and height of placeholder if not set
   if(is.null(height) & is.null(width)){
@@ -52,7 +56,7 @@ polish_content_pptx.ggplot <- function(x, ph = "<p:ph/>", pptx, ..., height = NU
 
     if(invalid_dims){
 
-      width_value <- width_value %||% "NULL"
+      width_value <- width %||% "NULL"
       height_value <- height %||% "NULL"
 
       cli_abort(c(
@@ -62,14 +66,25 @@ polish_content_pptx.ggplot <- function(x, ph = "<p:ph/>", pptx, ..., height = NU
       ), call = error_call)
     }
 
+    # downstream functions work in inches
+    height <- to_inches(height, units = units, res = res)
+    width  <- to_inches(width, units = units, res = res)
+
     image_fit <- image_fit %||% "scale"
   }
-
 
   png <- polish_ggplot(x, device = device, height = height, width = width, units = "in", dpi = res, scale = scale)
   polish_content_pptx(png, ph = ph, pptx = pptx, ..., height = height, width = width, units = "in", image_fit = image_fit, error_call = error_call)
 }
 
+
+to_inches <- function(x, units = c("in", "cm", "mm", "px"), res = 300) {
+  units <- match.arg(units)
+  if (units == "px" && !is.numeric(res)) {
+    cli::cli_abort("{.arg res} must be numeric (pixels per inch) when {.code units = \"px\"}.")
+  }
+  switch(units, "in" = x, cm = x / 2.54, mm = x / 25.4, px = x / res)
+}
 
 polish_ggplot <- function(x, device = c("png","svg","jpeg","dml"), ...) {
   device <- match.arg(device)
