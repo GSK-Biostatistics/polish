@@ -133,15 +133,18 @@ polish_content_pptx.list <- function(x, ph = '<p:ph/>', pptx, ..., list_type = c
 # file_ -------------------------------------------------------------------
 
 #' @param units see [officer::external_img]
-#' @param image_fit Should the image be distorted to match the dimensions of the placeholder, or scaled up/down and keep dimension ratio (scale). Default is "stretch".
+#' @param image_fit How the image is fit to the placeholder. "stretch" distorts the image to match the placeholder; "scale" scales up/down keeping the aspect ratio; "scale_down" keeps the original size (centered) when the image is smaller than the placeholder, and otherwise scales down keeping the aspect ratio. Default is "stretch".
 #' @param scale Multiplicative scaling factor to use when saving the plot. See [ggplot2::ggsave].
 #'
 #' @rdname polish_content_pptx
 #' @export
-polish_content_pptx.file_png <- function(x, ph = '<p:ph/>', pptx, ..., height = NULL, width = NULL, units = "in", image_fit = c("stretch","scale"), error_call = current_env()) {
+polish_content_pptx.file_png <- function(x, ph = '<p:ph/>', pptx, ..., height = NULL, width = NULL, units = c("in", "cm", "mm"), image_fit = c("stretch","scale","scale_down"), error_call = current_env()) {
   check_dots_empty(call = error_call)
 
   image_fit <- match.arg(image_fit)
+  units <- match.arg(units)
+  height <- if (!is.null(height)) to_inches(height, units = units)
+  width  <- if (!is.null(width)) to_inches(width, units = units)
 
   ## get image size, either pre-defined, or guess size
   if(is.null(height) & is.null(width)){
@@ -179,7 +182,7 @@ polish_content_pptx.file_png <- function(x, ph = '<p:ph/>', pptx, ..., height = 
 }
 
 #' @export
-polish_content_pptx.file_dml <- function(x, ph = '<p:ph/>', pptx, ..., height = NULL, width = NULL, units = "in", image_fit = c("stretch","scale"), error_call = current_env()) {
+polish_content_pptx.file_dml <- function(x, ph = '<p:ph/>', pptx, ..., height = NULL, width = NULL, units = "in", image_fit = c("stretch","scale","scale_down"), error_call = current_env()) {
   check_dots_empty(call = error_call)
   image_fit <- match.arg(image_fit)
 
@@ -269,6 +272,8 @@ fit_to_placeholder <- function(image_definition, sp_ph, image_fit) {
 
   if (image_fit == "scale") {
     image_fit_scale(image_definition, ph_offsets, ph_dims)
+  } else if (image_fit == "scale_down") {
+    image_fit_scale_down(image_definition, ph_offsets, ph_dims)
   } else {
     image_fit_stretch(image_definition, ph_offsets, ph_dims)
   }
@@ -346,6 +351,22 @@ image_fit_scale <- function(image_definition, ph_offsets, ph_dims){
     offset = list(top = img_top, left = img_left)
   )
 
+}
+
+image_fit_scale_down <- function(image_definition, ph_offsets, ph_dims){
+
+  img <- image_definition$dims
+  if (img$width <= ph_dims$width && img$height <= ph_dims$height) {
+    # Keep original size, centered in the placeholder
+    return(list(
+      dims = list(height = img$height, width = img$width),
+      offset = list(
+        top = ph_offsets$top + (ph_dims$height - img$height) / 2,
+        left = ph_offsets$left + (ph_dims$width - img$width) / 2
+      )
+    ))
+  }
+  image_fit_scale(image_definition, ph_offsets, ph_dims)
 }
 
 image_fit_stretch <- function(image_definition, ph_offsets, ph_dims){

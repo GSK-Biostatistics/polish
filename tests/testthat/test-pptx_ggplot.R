@@ -89,3 +89,26 @@ test_that("polish_content_word().ggplot - partially or incorrectly defined heigh
   )
 
 })
+
+test_that("polish_content_pptx.ggplot() image_fit = 'scale_down' with units = 'cm'", {
+  suppressWarnings(withr::local_package("ggplot2"))
+
+  ph <- "<p:nvSpPr><p:cNvPr id=\"c5672246-4915-4812-b4a2-e7de4805bade\" name=\"New Placeholder\"/><p:cNvSpPr><a:spLocks noGrp=\"1\"/></p:cNvSpPr><p:nvPr><p:ph type=\"body\"/></p:nvPr></p:nvSpPr><p:spPr><a:xfrm><a:off x=\"487680\" y=\"480060\"/><a:ext cx=\"7071360\" cy=\"5829300\"/></a:xfrm></p:spPr>"
+  p <- ggplot(mtcars, aes(mpg, cyl)) + geom_point()
+
+  # 5 x 2.54 cm is smaller than the placeholder: original size, centered
+  xml_small <- polish_content_pptx(p, ph = ph, width = 5, height = 2.54, units = "cm", image_fit = "scale_down")
+
+  expect_equal(xml_attr(xml_find_all(xml_small, ".//a:ext"), "cx"), "1800000")
+  expect_equal(xml_attr(xml_find_all(xml_small, ".//a:ext"), "cy"), "914400")
+  expect_equal(xml_attr(xml_find_all(xml_small, ".//a:off"), "x"), "3123360")
+  expect_equal(xml_attr(xml_find_all(xml_small, ".//a:off"), "y"), "2937510")
+
+  # 30 x 6 cm is wider than the placeholder: scaled to its width, centered vertically
+  xml_large <- polish_content_pptx(p, ph = ph, width = 30, height = 6, units = "cm", image_fit = "scale_down")
+
+  expect_equal(xml_attr(xml_find_all(xml_large, ".//a:ext"), "cx"), "7071360")
+  expect_equal(xml_attr(xml_find_all(xml_large, ".//a:ext"), "cy"), "1414272")
+  expect_equal(xml_attr(xml_find_all(xml_large, ".//a:off"), "x"), "487680")
+  expect_equal(xml_attr(xml_find_all(xml_large, ".//a:off"), "y"), "2687574")
+})

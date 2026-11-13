@@ -72,3 +72,33 @@ test_that("polish_content_pptx.file_png() image_fit", {
   expect_equal(xml_attr(xml_find_all(xml_stretch_tall, ".//a:ext"), "cy"), "5829300")
 
 })
+
+
+test_that("polish_content_pptx.file_png() image_fit = 'scale_down'", {
+
+  suppressWarnings(withr::local_package("ggplot2"))
+
+  # placeholder is ~7.73 x 6.38 in
+  ph <- "<p:nvSpPr><p:cNvPr id=\"c5672246-4915-4812-b4a2-e7de4805bade\" name=\"New Placeholder\"/><p:cNvSpPr><a:spLocks noGrp=\"1\"/></p:cNvSpPr><p:nvPr><p:ph type=\"body\"/></p:nvPr></p:nvSpPr><p:spPr><a:xfrm><a:off x=\"487680\" y=\"480060\"/><a:ext cx=\"7071360\" cy=\"5829300\"/></a:xfrm></p:spPr>"
+
+  p <- ggplot(mtcars, aes(mpg, cyl)) + geom_point()
+  temp_png <- tempfile(fileext = ".png")
+  ggsave(plot = p, filename = temp_png, width = 4, height = 3, units = "in", dpi = 100)
+  img_file <- as_file(temp_png)
+
+  # smaller than placeholder: original size (2 x 1 in), centered
+  xml_small <- polish_content_pptx(img_file, ph = ph, width = 2, height = 1, image_fit = "scale_down")
+
+  expect_equal(xml_attr(xml_find_all(xml_small, ".//a:ext"), "cx"), "1828800")
+  expect_equal(xml_attr(xml_find_all(xml_small, ".//a:ext"), "cy"), "914400")
+  expect_equal(xml_attr(xml_find_all(xml_small, ".//a:off"), "x"), "3108960")
+  expect_equal(xml_attr(xml_find_all(xml_small, ".//a:off"), "y"), "2937510")
+
+  # wider than placeholder (12 x 3 in): scaled to placeholder width, centered vertically
+  xml_large <- polish_content_pptx(img_file, ph = ph, width = 12, height = 3, image_fit = "scale_down")
+
+  expect_equal(xml_attr(xml_find_all(xml_large, ".//a:ext"), "cx"), "7071360")
+  expect_equal(xml_attr(xml_find_all(xml_large, ".//a:ext"), "cy"), "1767840")
+  expect_equal(xml_attr(xml_find_all(xml_large, ".//a:off"), "x"), "487680")
+  expect_equal(xml_attr(xml_find_all(xml_large, ".//a:off"), "y"), "2510790")
+})
